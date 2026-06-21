@@ -77,11 +77,11 @@ export default function ScrollStory({ scrollRef, activeIndex, jumpToSection, isM
       const t = progress * (SECTIONS - 1); // 0 (hero) .. NUM_SHAPES
 
       // Hero fades out as you scroll toward the first product.
+      // (Only opacity + translate — both GPU-composited, no per-frame paint.)
       if (heroRef.current) {
         const op = smoothstep(clamp(1 - t / 0.85, 0, 1));
         heroRef.current.style.opacity = op.toFixed(3);
-        heroRef.current.style.filter = `blur(${((1 - op) * 6).toFixed(2)}px)`;
-        heroRef.current.style.transform = `translateY(${(-(1 - op) * 30).toFixed(1)}px)`;
+        heroRef.current.style.transform = `translate3d(0, ${(-(1 - op) * 26).toFixed(1)}px, 0)`;
       }
 
       // Products centered at t = i+1.
@@ -91,9 +91,7 @@ export default function ScrollStory({ scrollRef, activeIndex, jumpToSection, isM
         const el = blockRefs.current[i];
         if (el) {
           el.style.opacity = op.toFixed(3);
-          el.style.filter = `blur(${((1 - op) * 7).toFixed(2)}px)`;
-          el.style.transform = `translateY(${((1 - op) * 42).toFixed(1)}px)`;
-          el.style.clipPath = `inset(0 0 ${((1 - op) * 100).toFixed(1)}% 0)`;
+          el.style.transform = `translate3d(0, ${((1 - op) * 40).toFixed(1)}px, 0)`;
         }
         const line = lineRefs.current[i];
         if (line) line.style.transform = `scaleX(${op.toFixed(3)})`;
@@ -332,7 +330,6 @@ const styles = {
     fontSize: 14,
     textDecoration: 'none',
     boxShadow: '0 10px 34px rgba(47,111,237,0.5)',
-    backdropFilter: 'blur(4px)',
     willChange: 'transform',
   },
   dots: {
@@ -400,7 +397,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    willChange: 'opacity, filter, transform',
+    willChange: 'opacity, transform',
   },
   heroEyebrow: {
     display: 'inline-flex',
@@ -502,7 +499,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     maxWidth: 500,
-    willChange: 'opacity, filter, transform, clip-path',
+    willChange: 'opacity, transform',
   },
   eyebrow: {
     display: 'inline-flex',

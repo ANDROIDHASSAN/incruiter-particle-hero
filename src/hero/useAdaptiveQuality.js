@@ -32,12 +32,11 @@ export function useAdaptiveQuality() {
       /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || width < 760;
 
     if (isMobile || cores <= 3 || memory <= 2) {
-      // Mobile: fewer particles but FULL pixel-ratio (capped at 2) so it renders
-      // crisp on retina phones instead of blurry. Bloom off for performance.
+      // Mobile: fewer particles, DPR capped at 1.5 (sharp but cheap), no bloom.
       return {
         tier: 'low',
-        count: 20000,
-        dprCap: Math.min(devicePixelRatioSafe(), 2),
+        count: 14000,
+        dprCap: Math.min(devicePixelRatioSafe(), 1.5),
         bloom: false,
         bloomIntensity: 0,
         size: 10,
@@ -48,22 +47,22 @@ export function useAdaptiveQuality() {
     if (cores >= 8 && memory >= 8 && width >= 1280) {
       return {
         tier: 'high',
-        count: 100000,
-        dprCap: Math.min(devicePixelRatioSafe(), 2),
+        count: 65000,
+        dprCap: Math.min(devicePixelRatioSafe(), 1.5),
         bloom: true,
-        bloomIntensity: 0.55,
-        size: 9,
+        bloomIntensity: 0.5,
+        size: 10,
         reducedMotion: false,
       };
     }
 
     return {
       tier: 'mid',
-      count: 60000,
-      dprCap: Math.min(devicePixelRatioSafe(), 1.75),
+      count: 40000,
+      dprCap: Math.min(devicePixelRatioSafe(), 1.25),
       bloom: true,
-      bloomIntensity: 0.5,
-      size: 9,
+      bloomIntensity: 0.45,
+      size: 10,
       reducedMotion: false,
     };
   }, []);
