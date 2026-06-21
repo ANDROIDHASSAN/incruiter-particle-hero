@@ -4,10 +4,11 @@ import { samplePoints } from './sampleGeometry.js';
 /**
  * INCFEED — Interview Scheduling Software.
  *
- * A calendar: a rounded square frame, a header bar, two binder rings, and a
- * grid of date dots arranged directly for crispness.
+ * A clean calendar: a rounded-rect outline, a solid header bar, two binder
+ * rings, and a crisp grid of date dots. Points are budgeted per feature so the
+ * header and grid stay dense and readable.
  */
-function roundedRectShape(w, h, r) {
+function roundedRect(w, h, r) {
   const s = new THREE.Shape();
   const x = -w / 2;
   const y = -h / 2;
@@ -28,48 +29,57 @@ const H = 2.4;
 
 export default function incfeed(count) {
   const arr = new Float32Array(count * 3);
+  let o = 0;
+  const put = (geo, frac) => {
+    const n = Math.max(1, Math.floor(count * frac));
+    const slice = samplePoints(geo, Math.min(n, count - o / 3));
+    arr.set(slice, o);
+    o += slice.length;
+  };
 
-  // --- Frame (rounded-rect ring) + header bar via surface sampling. -------
-  const outer = roundedRectShape(W, H, 0.28);
-  const inner = roundedRectShape(W - 0.28, H - 0.28, 0.18);
+  // Frame outline (rounded-rect ring).
+  const outer = roundedRect(W, H, 0.28);
+  const inner = roundedRect(W - 0.3, H - 0.3, 0.18);
   outer.holes.push(new THREE.Path(inner.getPoints(48).reverse()));
   const frame = new THREE.ExtrudeGeometry(outer, { depth: 0.12, bevelEnabled: false });
   frame.center();
+  put(frame, 0.3);
 
-  const header = new THREE.BoxGeometry(W - 0.28, 0.42, 0.13);
+  // Solid header bar.
+  const header = new THREE.BoxGeometry(W - 0.3, 0.42, 0.14);
   header.translate(0, H / 2 - 0.42, 0);
+  put(header, 0.12);
 
-  const ringL = new THREE.TorusGeometry(0.09, 0.03, 8, 16);
+  // Binder rings.
+  const ringL = new THREE.TorusGeometry(0.1, 0.035, 10, 18);
   ringL.translate(-W / 4, H / 2 - 0.02, 0);
   const ringR = ringL.clone();
   ringR.translate(W / 2, 0, 0);
+  put([ringL, ringR], 0.06);
 
-  const framePoints = Math.floor(count * 0.45);
-  arr.set(samplePoints([frame, header, ringL, ringR], framePoints), 0);
-
-  // --- Date grid dots placed directly. ------------------------------------
+  // Date grid dots placed directly (the remaining budget).
   const cols = 5;
   const rows = 4;
   const cells = cols * rows;
-  const gridPoints = count - framePoints;
+  const gridPoints = Math.max(0, count - o / 3);
   const gridW = W - 0.9;
-  const gridH = H - 1.1;
+  const gridH = H - 1.15;
   const x0 = -gridW / 2;
-  const y0 = -gridH / 2 - 0.15;
+  const y0 = -gridH / 2 - 0.18;
   const stepX = gridW / (cols - 1);
   const stepY = gridH / (rows - 1);
-  const dotR = 0.12;
+  const dotR = 0.13;
 
   for (let i = 0; i < gridPoints; i++) {
-    const idx = framePoints + i;
     const cell = i % cells;
     const cx = cell % cols;
     const cy = Math.floor(cell / cols);
-    const r = Math.pow(Math.random(), 0.5) * dotR;
+    const r = Math.pow(Math.random(), 0.6) * dotR;
     const a = Math.random() * Math.PI * 2;
+    const idx = o / 3 + i;
     arr[idx * 3] = x0 + cx * stepX + Math.cos(a) * r;
     arr[idx * 3 + 1] = y0 + cy * stepY + Math.sin(a) * r;
-    arr[idx * 3 + 2] = (Math.random() - 0.5) * 0.06;
+    arr[idx * 3 + 2] = (Math.random() - 0.5) * 0.05;
   }
 
   return arr;

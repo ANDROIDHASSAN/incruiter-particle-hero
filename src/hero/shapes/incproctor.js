@@ -4,43 +4,47 @@ import { samplePoints } from './sampleGeometry.js';
 /**
  * INCPROCTOR — Online Proctoring Software.
  *
- * A classic shield with a check mark, conveying security / proctoring.
+ * A clean shield OUTLINE with a bold check mark inside — security / proctoring.
+ * Outlined (not a filled blob) so the silhouette and the check both read clearly.
  */
-export default function incproctor(count) {
-  // Shield outline.
+function shieldPath(scale) {
   const s = new THREE.Shape();
-  s.moveTo(0, 1.3);
-  s.bezierCurveTo(0.9, 1.0, 1.2, 0.9, 1.2, 0.6);
-  s.lineTo(1.2, -0.2);
-  s.bezierCurveTo(1.2, -0.9, 0.7, -1.3, 0, -1.6);
-  s.bezierCurveTo(-0.7, -1.3, -1.2, -0.9, -1.2, -0.2);
-  s.lineTo(-1.2, 0.6);
-  s.bezierCurveTo(-1.2, 0.9, -0.9, 1.0, 0, 1.3);
+  s.moveTo(0, 1.3 * scale);
+  s.bezierCurveTo(0.9 * scale, 1.0 * scale, 1.2 * scale, 0.9 * scale, 1.2 * scale, 0.6 * scale);
+  s.lineTo(1.2 * scale, -0.2 * scale);
+  s.bezierCurveTo(1.2 * scale, -0.9 * scale, 0.7 * scale, -1.3 * scale, 0, -1.6 * scale);
+  s.bezierCurveTo(-0.7 * scale, -1.3 * scale, -1.2 * scale, -0.9 * scale, -1.2 * scale, -0.2 * scale);
+  s.lineTo(-1.2 * scale, 0.6 * scale);
+  s.bezierCurveTo(-1.2 * scale, 0.9 * scale, -0.9 * scale, 1.0 * scale, 0, 1.3 * scale);
+  return s;
+}
 
-  const shield = new THREE.ExtrudeGeometry(s, {
-    depth: 0.22,
+export default function incproctor(count) {
+  // Shield outline = outer shield minus an inner shield (a thick ring).
+  const outer = shieldPath(1.0);
+  const innerPts = shieldPath(0.74).getPoints(60).reverse();
+  outer.holes.push(new THREE.Path(innerPts));
+  const shield = new THREE.ExtrudeGeometry(outer, {
+    depth: 0.2,
     bevelEnabled: true,
-    bevelSize: 0.05,
-    bevelThickness: 0.05,
+    bevelSize: 0.04,
+    bevelThickness: 0.04,
     bevelSegments: 2,
   });
   shield.center();
 
-  // Check mark built from two boxes, raised slightly above the shield face.
-  const c1 = new THREE.BoxGeometry(0.55, 0.16, 0.1);
+  // Bold check mark (two thick bars), raised toward the viewer.
+  const c1 = new THREE.BoxGeometry(0.62, 0.22, 0.12);
   c1.rotateZ(-Math.PI / 4);
-  c1.translate(-0.28, -0.18, 0.18);
-  const c2 = new THREE.BoxGeometry(0.95, 0.16, 0.1);
+  c1.translate(-0.3, -0.2, 0.2);
+  const c2 = new THREE.BoxGeometry(1.08, 0.22, 0.12);
   c2.rotateZ(Math.PI / 4);
-  c2.translate(0.18, 0.05, 0.18);
+  c2.translate(0.2, 0.08, 0.2);
 
-  // ~70% shield, ~30% check so the symbol stays visible.
-  const shieldPoints = Math.floor(count * 0.7);
-  const shieldArr = samplePoints(shield, shieldPoints);
-  const checkArr = samplePoints([c1, c2], count - shieldPoints);
-
+  // ~58% shield outline, ~42% check so the symbol is bold and clear.
   const arr = new Float32Array(count * 3);
-  arr.set(shieldArr, 0);
-  arr.set(checkArr, shieldPoints * 3);
+  const shieldPts = Math.floor(count * 0.58);
+  arr.set(samplePoints(shield, shieldPts), 0);
+  arr.set(samplePoints([c1, c2], count - shieldPts), shieldPts * 3);
   return arr;
 }
