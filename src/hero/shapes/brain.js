@@ -34,42 +34,43 @@ export default function brain(count) {
       const side = i % 2 === 0 ? -1 : 1;
       const ax = Math.abs(x);
 
-      // Ellipsoid: wider than tall, with depth.
-      let pxMag = ax * 1.02;
+      // Ellipsoid: wider than tall, and FLATTER (less depth) so the front-on
+      // silhouette + folds read clearly instead of a deep blob.
+      let pxMag = ax * 1.05;
       let py = y * 0.82;
-      let pz = z * 0.95;
+      let pz = z * 0.66;
 
-      // Gyri: layered ridged noise -> sharp fold lines.
+      // Gyri: layered ridged noise -> deep, high-contrast fold lines.
       const sx = side * pxMag;
-      const f = 2.4;
+      const f = 3.0;
       const r1 = 1 - Math.abs(noise3D(sx * f, py * f, pz * f));
-      const r2 = 1 - Math.abs(noise3D(sx * f * 2.2 + 11, py * f * 2.2 - 7, pz * f * 2.2 + 3));
-      const gy = r1 * 0.65 + r2 * 0.35;
-      const sc = 0.82 + gy * 0.34;
+      const r2 = 1 - Math.abs(noise3D(sx * f * 2.3 + 11, py * f * 2.3 - 7, pz * f * 2.3 + 3));
+      const gy = r1 * 0.6 + r2 * 0.4;
+      const sc = 0.74 + gy * 0.5;
       pxMag *= sc; py *= sc; pz *= sc;
 
       // Flatten the underside (brains are flat on the bottom).
-      if (py < 0) py *= 0.72;
+      if (py < 0) py *= 0.7;
 
-      // Sagittal fissure: a clear gap between the two hemispheres, each with a
-      // flattish medial wall.
-      arr[i * 3] = side * (0.08 + pxMag);
+      // Sagittal fissure: a clear, wide gap between the two hemispheres, each
+      // with a flattish medial wall.
+      arr[i * 3] = side * (0.14 + pxMag);
       arr[i * 3 + 1] = py;
       arr[i * 3 + 2] = pz;
     } else {
       // --- CEREBELLUM: small ridged lobe at the lower back -----------------
-      let px = x * 0.55;
-      let py = y * 0.3;
-      let pz = z * 0.4;
+      let px = x * 0.58;
+      let py = y * 0.28;
+      let pz = z * 0.3;
 
       // Fine horizontal folia.
-      const r = 1 - Math.abs(noise3D(px * 3 + 50, py * 10, pz * 3));
-      const sc = 0.85 + r * 0.22;
+      const r = 1 - Math.abs(noise3D(px * 3 + 50, py * 11, pz * 3));
+      const sc = 0.82 + r * 0.26;
       px *= sc; py *= sc; pz *= sc;
 
       arr[i * 3] = px;
-      arr[i * 3 + 1] = py - 0.74;
-      arr[i * 3 + 2] = pz - 0.62;
+      arr[i * 3 + 1] = py - 0.72;
+      arr[i * 3 + 2] = pz - 0.4;
     }
   }
   return arr;
