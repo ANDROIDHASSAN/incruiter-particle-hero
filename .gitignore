@@ -1,0 +1,9 @@
+node_modules
+dist
+.devserver.log
+.playwright-mcp
+*.local
+.DS_Store
+
+# Reference capture (third-party recording) — kept local, not published
+reference/

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0a1422" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>InCruiter — Precision hiring, powered by AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --navy: #07182e;
+        --cyan: #4fd1ff;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body {
+        background: #010205;
+        color: #eaf2ff;
+        font-family: 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      ::selection { background: rgba(79, 209, 255, 0.3); color: #fff; }
+
+      /* Lenis smooth scroll */
+      html.lenis, html.lenis body { height: auto; }
+      .lenis.lenis-smooth { scroll-behavior: auto !important; }
+      .lenis.lenis-stopped { overflow: hidden; }
+
+      /* Custom cursor: hide native pointer only on fine-pointer devices */
+      @media (pointer: fine) {
+        .has-custom-cursor, .has-custom-cursor * { cursor: none !important; }
+      }
+
+      /* Film grain drift */
+      @keyframes grainShift {
+        0%   { transform: translate(0, 0); }
+        20%  { transform: translate(-3%, 2%); }
+        40%  { transform: translate(2%, -3%); }
+        60%  { transform: translate(-2%, 1%); }
+        80%  { transform: translate(3%, 2%); }
+        100% { transform: translate(0, 0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .grain { animation: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
